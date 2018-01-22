@@ -37,6 +37,7 @@ public class LeftControllerInputManager : MonoBehaviour {
 
             laser.SetPosition(0, gameObject.transform.position);
             RaycastHit hit;
+
             if (Physics.Raycast(transform.position, transform.forward, out hit, 15, laserMask))
             {
                 teleportLocation = hit.point;
@@ -46,12 +47,12 @@ public class LeftControllerInputManager : MonoBehaviour {
             }
             else
             {
-                teleportLocation = transform.forward * 15 + transform.position;
+                // use the tempLocation to locate the teleportAimerObject's position when the laser does not hit the ground
+                Vector3 tempLocation = transform.forward * 15 + transform.position;
                 RaycastHit groundRay;
-                if (Physics.Raycast(teleportLocation, -Vector3.up, out groundRay, 17, laserMask))
+                if (Physics.Raycast(tempLocation, -Vector3.up, out groundRay, 17, laserMask))
                 {
                     teleportLocation = groundRay.point;
-
                 }
                 laser.SetPosition(1, transform.forward * 15 + transform.position);
                 //aimer position
@@ -60,6 +61,7 @@ public class LeftControllerInputManager : MonoBehaviour {
             }
         }
 
+        // to move the player's position
         if (device.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad))
         {
             laser.gameObject.SetActive(false);
@@ -79,24 +81,36 @@ public class LeftControllerInputManager : MonoBehaviour {
         {
             if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
             {
-                ThrowObject(col);
+                ThrowBall(col);
             }
             else if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip) && 
                      col.GetComponent<BallController>().isInPlatform)
             {
-                GrabObject(col);
+                GrabBall(col);
             }
+        } 
+        else if(col.gameObject.CompareTag("Structure"))
+        {
+            if (device.GetPressUp(SteamVR_Controller.ButtonMask.Grip))
+            {
+                PutDownStructure(col);
+            }
+            else if (device.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
+            {
+                GrabStructure(col);
+            }
+
         }
     }
 
-	void GrabObject(Collider coli)
+	void GrabBall(Collider coli)
     {
         coli.transform.SetParent(gameObject.transform);
         coli.GetComponent<Rigidbody>().isKinematic = true;
         coli.GetComponent<BallController>().isGrabbing = true;
         //device.TriggerHapticPulse(2000);
     }
-    void ThrowObject(Collider coli)
+    void ThrowBall(Collider coli)
     {
         // anti-cheat
         BallController ball = coli.GetComponent<BallController>();
@@ -111,5 +125,15 @@ public class LeftControllerInputManager : MonoBehaviour {
             rigidBody.angularVelocity = device.angularVelocity;
         }
         
+    }
+
+    void GrabStructure(Collider coli)
+    {
+        coli.transform.SetParent(gameObject.transform);
+    }
+
+    void PutDownStructure(Collider coli)
+    {
+        coli.transform.SetParent(null);
     }
 }

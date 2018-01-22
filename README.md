@@ -6,7 +6,7 @@ This project is part of [Udacity](https://www.udacity.com "Udacity - Be in deman
 
 ## Versions
 - Unity 2017.2.0f3
-- Head Set: Oculus Rift CV1
+- Head Set: Oculus Rift CV1 (HTC Vive may work fine too, since the SteamVR sdk which is the only headset's sdk being used in this project has the full support for both HTC Vive and Oculus Rift)
 
 ## Unity packages
 - SteamVR plugin for Unity - v1.2.2
